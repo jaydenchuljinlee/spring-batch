@@ -16,7 +16,7 @@ data class HelloJobConfiguration(
     val jobBuilderFactory: JobBuilderFactory,
     val stepBuilderFactory: StepBuilderFactory
 ) {
-    @Bean
+    @Bean 
     fun batchJob(): Job? {
         return jobBuilderFactory.get("batchJob")
             .incrementer(RunIdIncrementer())
@@ -25,7 +25,7 @@ data class HelloJobConfiguration(
             .build()
     }
 
-    @Bean 
+    @Bean
     fun step1(): Step {
         return stepBuilderFactory.get("step1")
             .tasklet{ stepContribution: StepContribution, chunkContext: ChunkContext ->
