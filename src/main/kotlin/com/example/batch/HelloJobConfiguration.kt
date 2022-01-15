@@ -25,7 +25,7 @@ data class HelloJobConfiguration(
             .build()
     }
 
-    @Bean
+    @Bean 
     fun step1(): Step {
         return stepBuilderFactory.get("step1")
             .tasklet{ stepContribution: StepContribution, chunkContext: ChunkContext ->
