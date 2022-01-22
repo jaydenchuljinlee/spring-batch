@@ -5,8 +5,11 @@ import org.springframework.batch.core.Step
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
+import org.springframework.batch.core.configuration.annotation.StepScope
 import org.springframework.batch.core.launch.support.RunIdIncrementer
 import org.springframework.batch.core.scope.context.ChunkContext
+import org.springframework.batch.item.ItemProcessor
+import org.springframework.batch.item.ItemReader
 import org.springframework.batch.repeat.RepeatStatus
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
@@ -16,7 +19,8 @@ data class HelloJobConfiguration(
     val jobBuilderFactory: JobBuilderFactory,
     val stepBuilderFactory: StepBuilderFactory
 ) {
-    @Bean 
+
+    @Bean
     fun batchJob(): Job? {
         return jobBuilderFactory.get("batchJob")
             .incrementer(RunIdIncrementer())
@@ -36,13 +40,16 @@ data class HelloJobConfiguration(
 
     @Bean
     fun step2(): Step {
-        return stepBuilderFactory.get("step1")
-            .tasklet{ stepContribution: StepContribution, chunkContext: ChunkContext ->
-                println("step2 has executed")
-                return@tasklet RepeatStatus.FINISHED
-            }.build()
+        return stepBuilderFactory.get("step2")
+            .chunk<String, String>(3)
+            .reader(ItemReader<String> {
+                return@ItemReader null
+            })
+            .processor(ItemProcessor<String, String> {
+                return@ItemProcessor null
+            })
+            .build()
     }
-
 }
 
 
