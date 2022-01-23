@@ -5,21 +5,17 @@ import org.springframework.batch.core.Step
 import org.springframework.batch.core.StepContribution
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory
-import org.springframework.batch.core.configuration.annotation.StepScope
 import org.springframework.batch.core.launch.support.RunIdIncrementer
 import org.springframework.batch.core.scope.context.ChunkContext
-import org.springframework.batch.item.ItemProcessor
-import org.springframework.batch.item.ItemReader
 import org.springframework.batch.repeat.RepeatStatus
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
-// @Configuration
-data class HelloJobConfiguration(
+@Configuration
+data class Limit_AllowConfiguration(
     val jobBuilderFactory: JobBuilderFactory,
     val stepBuilderFactory: StepBuilderFactory
 ) {
-
     @Bean
     fun batchJob(): Job? {
         return jobBuilderFactory.get("batchJob")
@@ -35,7 +31,9 @@ data class HelloJobConfiguration(
             .tasklet{ stepContribution: StepContribution, chunkContext: ChunkContext ->
                 println("step1 = $stepContribution, chunkContext = $chunkContext")
                 return@tasklet RepeatStatus.FINISHED
-            }.build()
+            }
+            .allowStartIfComplete(true)
+            .build()
     }
 
     @Bean
@@ -50,5 +48,3 @@ data class HelloJobConfiguration(
             .build()
     }
 }
-
-
