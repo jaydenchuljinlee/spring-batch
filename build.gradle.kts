@@ -1,44 +1,48 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-	id("org.springframework.boot") version "2.6.2"
-	id("io.spring.dependency-management") version "1.0.11.RELEASE"
-	kotlin("jvm") version "1.4.10"
-	kotlin("plugin.spring") version "1.6.10"
+	id("org.springframework.boot") version "3.1.9-SNAPSHOT"
+	id("io.spring.dependency-management") version "1.1.4"
+	kotlin("jvm") version "1.8.22"
+	kotlin("plugin.spring") version "1.8.22"
+	kotlin("plugin.jpa") version "1.8.22"
 }
 
 group = "com.example"
 version = "0.0.1-SNAPSHOT"
-java.sourceCompatibility = JavaVersion.VERSION_1_8
 
-configurations {
-	compileOnly {
-		extendsFrom(configurations.annotationProcessor.get())
-	}
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
 }
 
 repositories {
 	mavenCentral()
+	maven { url = uri("https://repo.spring.io/milestone") }
+	maven { url = uri("https://repo.spring.io/snapshot") }
 }
 
 dependencies {
-	implementation("org.springframework.boot:spring-boot-starter-batch:2.6.2")
+	implementation("org.springframework.boot:spring-boot-starter-batch")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	compileOnly("org.projectlombok:lombok:1.18.22")
-	annotationProcessor("org.projectlombok:lombok:1.18.22")
-	runtimeOnly("mysql:mysql-connector-java")
-	testImplementation("org.springframework.boot:spring-boot-starter-test:2.6.2")
-	testImplementation("org.springframework.batch:spring-batch-test:4.3.4")
+	runtimeOnly("com.mysql:mysql-connector-j")
+	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.springframework.batch:spring-batch-test")
 }
 
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
-		freeCompilerArgs = listOf("-Xjsr305=strict")
-		jvmTarget = "11"
+		freeCompilerArgs += "-Xjsr305=strict"
+		jvmTarget = "17"
 	}
 }
 
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
+
+tasks.bootBuildImage {
+	builder.set("paketobuildpacks/builder-jammy-base:latest")
+}
+
