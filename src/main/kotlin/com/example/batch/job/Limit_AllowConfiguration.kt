@@ -1,4 +1,4 @@
-package com.example.batch
+package com.example.batch.job
 
 import org.springframework.batch.core.Job
 import org.springframework.batch.core.Step
@@ -9,16 +9,15 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer
 import org.springframework.batch.core.scope.context.ChunkContext
 import org.springframework.batch.repeat.RepeatStatus
 import org.springframework.context.annotation.Bean
-import org.springframework.context.annotation.Configuration
 
-@Configuration
+// @Configuration
 data class Limit_AllowConfiguration(
     val jobBuilderFactory: JobBuilderFactory,
     val stepBuilderFactory: StepBuilderFactory
 ) {
     @Bean
     fun batchJob(): Job? {
-        return jobBuilderFactory.get("batchJob")
+        return jobBuilderFactory.get("batchJob2")
             .incrementer(RunIdIncrementer())
             .start(step1())
             .next(step2())
