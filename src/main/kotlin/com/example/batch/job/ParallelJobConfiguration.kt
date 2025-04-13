@@ -53,27 +53,30 @@ class ParallelJobConfiguration(
     @Bean
     fun parallelStep1(): Step {
         return StepBuilder("${JobNames.PARALLEL_JOB}_STEP_1", jobRepository)
-            .tasklet(
-                { _, _ ->
-                    println("[${Thread.currentThread().name}] step1 실행 중")
-                    Thread.sleep(1000) // 일부러 지연
-                    RepeatStatus.FINISHED
-                }, transactionManager
-            )
+            .tasklet({ _, chunkContext ->
+                val threadName = Thread.currentThread().name
+                chunkContext.stepContext.stepExecution.executionContext.putString("threadName", threadName)
+
+                println("[$threadName] step1 실행 중")
+                Thread.sleep(1000)
+                RepeatStatus.FINISHED
+            }, transactionManager)
             .build()
     }
 
     @Bean
     fun parallelStep2(): Step {
         return StepBuilder("${JobNames.PARALLEL_JOB}_STEP_2", jobRepository)
-            .tasklet(
-                { _, _ ->
-                    println("[${Thread.currentThread().name}] step2 실행 중")
-                    Thread.sleep(1000) // 일부러 지연
-                    RepeatStatus.FINISHED
-                }, transactionManager
-            )
+            .tasklet({ _, chunkContext ->
+                val threadName = Thread.currentThread().name
+                chunkContext.stepContext.stepExecution.executionContext.putString("threadName", threadName)
+
+                println("[$threadName] step2 실행 중")
+                Thread.sleep(1000)
+                RepeatStatus.FINISHED
+            }, transactionManager)
             .build()
     }
+
 
 }

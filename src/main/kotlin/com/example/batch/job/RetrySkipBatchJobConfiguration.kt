@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Configuration
 import org.springframework.transaction.PlatformTransactionManager
 
 @Configuration
-class RetrySkipBatchJobConfig(
+class RetrySkipBatchJobConfiguration(
     private val jobRepository: JobRepository,
     private val transactionManager: PlatformTransactionManager
 ) {
