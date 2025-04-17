@@ -49,7 +49,7 @@ class RetryPolicyJobConfiguration(
 
     @Bean
     fun userReader(): ListItemReader<User> {
-        val users = (1..10).map { User(it, "User$it") }
+        val users = (1..10).map { User(it.toLong(), "User$it") }
         return ListItemReader(users)
     }
 
@@ -57,11 +57,11 @@ class RetryPolicyJobConfiguration(
     fun userProcessor(): ItemProcessor<User, String> {
         return ItemProcessor { user ->
             when (user.id) {
-                3 -> {
+                3L -> {
                     println("재시도 대상: ${user.name}")
                     throw RetryableException("임시 오류")
                 }
-                5 -> {
+                5L -> {
                     println("스킵 대상: ${user.name}")
                     throw IllegalStateException("처리 불가능")
                 }

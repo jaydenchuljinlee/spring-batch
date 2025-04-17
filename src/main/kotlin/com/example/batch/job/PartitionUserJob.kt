@@ -1,5 +1,6 @@
 package com.example.batch.job
 
+import com.example.batch.config.JobNames
 import com.example.batch.domain.User
 import com.example.batch.job.partitioner.RangePartitioner
 import org.springframework.batch.core.Job
@@ -31,14 +32,14 @@ class PartitionUserJob(
 ) {
     @Bean
     fun partitioningJob(): Job {
-        return JobBuilder("partitioningJob", jobRepository)
-            .start(masterStep(jdbcTemplate))
+        return JobBuilder(JobNames.PARTITION_JOB, jobRepository)
+            .start(partitionMasterStep(jdbcTemplate))
             .build()
     }
 
 
     @Bean
-    fun masterStep(jdbcTemplate: JdbcTemplate): Step {
+    fun partitionMasterStep(jdbcTemplate: JdbcTemplate): Step {
         val handler = TaskExecutorPartitionHandler()
         handler.setStep(slaveStep())
         handler.setGridSize(4)
@@ -56,8 +57,8 @@ class PartitionUserJob(
         return StepBuilder("slaveStep", jobRepository)
             .chunk<User, String>(100, transactionManager)
             .reader(partitionedUserReader(null, null, dataSource))
-            .processor(userProcessor())
-            .writer(userWriter())
+            .processor(partitionUserProcessor())
+            .writer(partitionUserWriter())
             .build()
     }
 
@@ -89,13 +90,13 @@ class PartitionUserJob(
 
 
     @Bean
-    fun userProcessor(): ItemProcessor<User, String> = ItemProcessor { user ->
+    fun partitionUserProcessor(): ItemProcessor<User, String> = ItemProcessor { user ->
         println("[${Thread.currentThread().name}] 처리 중: ${user.name}")
         "Processed-${user.name}"
     }
 
     @Bean
-    fun userWriter(): ItemWriter<String> = ItemWriter { items ->
+    fun partitionUserWriter(): ItemWriter<String> = ItemWriter { items ->
         println("[${Thread.currentThread().name}] 저장 완료: ${items.size()}건")
     }
 
