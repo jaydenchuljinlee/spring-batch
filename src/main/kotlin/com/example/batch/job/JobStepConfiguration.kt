@@ -1,5 +1,6 @@
 package com.example.batch.job
 
+import com.example.batch.config.JobNames
 import org.springframework.batch.core.*
 import org.springframework.batch.core.job.builder.JobBuilder
 import org.springframework.batch.core.launch.JobLauncher
@@ -20,7 +21,7 @@ class JobStepConfiguration(
 ) {
     @Bean
     fun parentJob(): Job {
-        return JobBuilder("batchJob", jobRepository)
+        return JobBuilder(JobNames.BATCH_JOB_STEP_EXAMPLE, jobRepository)
             .incrementer(RunIdIncrementer())
             .start(step1())
             .next(step2())
